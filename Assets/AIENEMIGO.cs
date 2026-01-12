@@ -130,6 +130,11 @@ public class AIENEMIGO : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlay);
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
+        if(_player.position == _playerLastPosition)
+        {
+            return true;
+        }
+
         if(distanceToPlayer > _detect)
         {
             return false;
@@ -138,6 +143,21 @@ public class AIENEMIGO : MonoBehaviour
         {
             return false;
         }
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, directionToPlay, out hit, distanceToPlayer))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                _playerLastPosition = _player.position;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         return true;
     }
     
