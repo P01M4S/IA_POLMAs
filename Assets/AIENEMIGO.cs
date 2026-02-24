@@ -21,6 +21,8 @@ public class AIENEMIGO : MonoBehaviour
     float _serchRadius = 10;
     Vector3 _playerLastPosition;
     float _detectionAngle = 90;
+    float _detect = 10f;
+    float _attackRange = 2f;
 
     void Awake()
     {
@@ -49,6 +51,13 @@ public class AIENEMIGO : MonoBehaviour
             break;
             default:
                 Patrol();
+            break;
+            case EnemyState.Waiting:
+                Waiting();
+            break;
+
+            case EnemyState.Attacking:
+                Attacking();
             break;
         }
     }
@@ -159,6 +168,37 @@ public class AIENEMIGO : MonoBehaviour
         }
 
         return true;
+    }
+
+     void Waiting()
+    {
+        _enemy.SetDestination(transform.position); // Se detiene
+        transform.LookAt(_player);
+
+        float distance = Vector3.Distance(transform.position, _player.position);
+
+        if(distance > _attackRange)
+        {
+            currentState = EnemyState.Chasing;
+            return;
+        }
+
+        _attackTimer += Time.deltaTime;
+
+        if(_attackTimer >= _attackCooldown)
+        {
+            currentState = EnemyState.Attacking;
+        }
+    }
+
+    void Attacking()
+    {
+        transform.LookAt(_player);
+
+        Debug.Log("Atacando al jugador!");
+
+        _attackTimer = 0f;
+        currentState = EnemyState.Waiting;
     }
     
 }
